@@ -22,7 +22,7 @@ public class CurveController {
 
 	@RequestMapping("/curvePoint/list")
 	public String home(Model model) {
-		model.addAttribute("curvePoints", curvePointServiceImpl.getAllCurve());
+		model.addAttribute("curvePoints", curvePointServiceImpl.getAllCurves());
 		return "curvePoint/list";
 	}
 
@@ -37,7 +37,7 @@ public class CurveController {
 			return "curvePoint/add";
 		}
 		curvePointServiceImpl.saveCurvePoint(curvePoint);
-		model.addAttribute("curvePoints", curvePointServiceImpl.getAllCurve());
+		model.addAttribute("curvePoints", curvePointServiceImpl.getAllCurves());
 		return "curvePoint/list";
 	}
 
@@ -63,7 +63,7 @@ public class CurveController {
 	public String deleteBid(@PathVariable("id") Integer id, Model model) {
 		CurvePoint cp = curvePointServiceImpl.getCurveById(id);
 		curvePointServiceImpl.deleteCurvePointById(cp.getId());
-		model.addAttribute("curvePoints", curvePointServiceImpl.getAllCurve());
+		model.addAttribute("curvePoints", curvePointServiceImpl.getAllCurves());
 		return "redirect:/curvePoint/list";
 	}
 }

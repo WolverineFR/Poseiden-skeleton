@@ -10,12 +10,12 @@ import com.nnk.springboot.repositories.BidListRepository;
 
 @Service
 public class BidListServiceImpl implements BidListService {
-	
+
 	@Autowired
 	private BidListRepository bidListRepository;
 
 	@Override
-	public List<BidList> getAllBid() {
+	public List<BidList> getAllBids() {
 		return bidListRepository.findAll();
 	}
 
@@ -30,9 +30,9 @@ public class BidListServiceImpl implements BidListService {
 	}
 
 	@Override
-	public void deleteBid(Integer id) {
+	public void deleteBidById(Integer id) {
 		bidListRepository.deleteById(id);
-		
+
 	}
 
 }

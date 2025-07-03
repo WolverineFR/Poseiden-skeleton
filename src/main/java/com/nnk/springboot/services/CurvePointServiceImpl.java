@@ -10,12 +10,12 @@ import com.nnk.springboot.repositories.CurvePointRepository;
 
 @Service
 public class CurvePointServiceImpl implements CurvePointService {
-	
+
 	@Autowired
 	private CurvePointRepository curvePointRepository;
 
 	@Override
-	public List<CurvePoint> getAllCurve() {
+	public List<CurvePoint> getAllCurves() {
 		return curvePointRepository.findAll();
 	}
 
@@ -32,7 +32,7 @@ public class CurvePointServiceImpl implements CurvePointService {
 	@Override
 	public void deleteCurvePointById(Integer id) {
 		curvePointRepository.deleteById(id);
-		
+
 	}
 
 }

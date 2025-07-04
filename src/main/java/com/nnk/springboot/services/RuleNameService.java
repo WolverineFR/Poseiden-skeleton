@@ -5,7 +5,7 @@ import java.util.List;
 import com.nnk.springboot.domain.RuleName;
 
 public interface RuleNameService {
-	List<RuleName> gettAllRulesNames();
+	List<RuleName> getAllRulesNames();
 
 	RuleName getRuleNameById(Integer id);
 

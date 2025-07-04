@@ -22,7 +22,7 @@ public class RuleNameController {
 
 	@RequestMapping("/ruleName/list")
 	public String home(Model model) {
-		model.addAttribute("ruleNames", ruleNameServiceImpl.gettAllRulesNames());
+		model.addAttribute("ruleNames", ruleNameServiceImpl.getAllRulesNames());
 		return "ruleName/list";
 	}
 
@@ -37,7 +37,7 @@ public class RuleNameController {
 			return "ruleName/add";
 		}
 		ruleNameServiceImpl.saveRuleName(ruleName);
-		model.addAttribute("ruleNames", ruleNameServiceImpl.gettAllRulesNames());
+		model.addAttribute("ruleNames", ruleNameServiceImpl.getAllRulesNames());
 		return "ruleName/list";
 	}
 
@@ -63,7 +63,7 @@ public class RuleNameController {
 	public String deleteRuleName(@PathVariable("id") Integer id, Model model) {
 		RuleName ruleName = ruleNameServiceImpl.getRuleNameById(id);
 		ruleNameServiceImpl.deleteRuleNameById(ruleName.getId());
-		model.addAttribute("ruleNames", ruleNameServiceImpl.gettAllRulesNames());
+		model.addAttribute("ruleNames", ruleNameServiceImpl.getAllRulesNames());
 		return "redirect:/ruleName/list";
 	}
 }

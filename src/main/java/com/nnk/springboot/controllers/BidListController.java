@@ -5,6 +5,8 @@ import com.nnk.springboot.services.BidListServiceImpl;
 
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,58 +18,62 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import jakarta.validation.Valid;
 
-
 @Controller
 public class BidListController {
-   
+
+	private static final Logger logger = LogManager.getLogger(BidListController.class);
+
 	@Autowired
 	private BidListServiceImpl bidListServiceImpl;
 
-    @RequestMapping("/bidList/list")
-    public String home(Model model)
-    {
-        model.addAttribute("bidLists", bidListServiceImpl.getAllBids());
-        return "bidList/list";
-    }
+	@RequestMapping("/bidList/list")
+	public String home(Model model) {
+		model.addAttribute("bidLists", bidListServiceImpl.getAllBids());
+		return "bidList/list";
+	}
 
-    @GetMapping("/bidList/add")
-    public String addBidForm(BidList bid) {
-        return "bidList/add";
-    }
+	@GetMapping("/bidList/add")
+	public String addBidForm(BidList bid) {
+		return "bidList/add";
+	}
 
-    @PostMapping("/bidList/validate")
-    public String validate(@Valid BidList bid, BindingResult result, Model model) {
-    	if (result.hasErrors() ) {
-    		return "bidList/add";
-    	}
-    	 bidListServiceImpl.saveBid(bid);
-    	 model.addAttribute("bidLists", bidListServiceImpl.getAllBids());
-        return "bidList/list";
-    }
+	@PostMapping("/bidList/validate")
+	public String validate(@Valid BidList bid, BindingResult result, Model model) {
+		if (result.hasErrors()) {
+			logger.warn("Ajout impossible, les données sont incorrect pour ce bid");
+			return "bidList/add";
+		}
+		bidListServiceImpl.saveBid(bid);
+		model.addAttribute("bidLists", bidListServiceImpl.getAllBids());
+		logger.info("Les données sont bien ajouté avec succès pour le bid : {}", bid.getAccount());
+		return "bidList/list";
+	}
 
-    @GetMapping("/bidList/update/{id}")
-    public String showUpdateForm(@PathVariable("id") Integer id, Model model) {
-    	BidList bid = bidListServiceImpl.getBidById(id);
-        model.addAttribute("bidList", bid);
-        return "bidList/update";
-    }
+	@GetMapping("/bidList/update/{id}")
+	public String showUpdateForm(@PathVariable("id") Integer id, Model model) {
+		BidList bid = bidListServiceImpl.getBidById(id);
+		model.addAttribute("bidList", bid);
+		return "bidList/update";
+	}
 
-    @PostMapping("/bidList/update/{id}")
-    public String updateBid(@PathVariable("id") Integer id, @Valid BidList bidList,
-                             BindingResult result, Model model) {
-    	 if (result.hasErrors()) {
-    	        return "bidList/update";
-    	    }
-    	    bidList.setBidListId(id);
-    	    bidListServiceImpl.saveBid(bidList);
-        return "redirect:/bidList/list";
-    }
+	@PostMapping("/bidList/update/{id}")
+	public String updateBid(@PathVariable("id") Integer id, @Valid BidList bidList, BindingResult result, Model model) {
+		if (result.hasErrors()) {
+			logger.warn("Modification impossible, les données sont incorrect pour ce bid");
+			return "bidList/update";
+		}
+		bidList.setBidListId(id);
+		bidListServiceImpl.saveBid(bidList);
+		logger.info("Les données du bid ont bien été modifié avec succès pour le bid : {}", bidList.getAccount());
+		return "redirect:/bidList/list";
+	}
 
-    @GetMapping("/bidList/delete/{id}")
-    public String deleteBid(@PathVariable("id") Integer id, Model model) {
-    	BidList bid = bidListServiceImpl.getBidById(id);
-        bidListServiceImpl.deleteBidById(bid.getBidListId());
-        model.addAttribute("bidLists",bidListServiceImpl.getAllBids());
-        return "redirect:/bidList/list";
-    }
+	@GetMapping("/bidList/delete/{id}")
+	public String deleteBid(@PathVariable("id") Integer id, Model model) {
+		BidList bid = bidListServiceImpl.getBidById(id);
+		bidListServiceImpl.deleteBidById(bid.getBidListId());
+		model.addAttribute("bidLists", bidListServiceImpl.getAllBids());
+		logger.info("Le bid {} à bien été supprimé.", bid.getAccount());
+		return "redirect:/bidList/list";
+	}
 }

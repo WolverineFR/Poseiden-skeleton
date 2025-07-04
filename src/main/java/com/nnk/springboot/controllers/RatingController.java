@@ -3,6 +3,8 @@ package com.nnk.springboot.controllers;
 import com.nnk.springboot.domain.Rating;
 import com.nnk.springboot.services.RatingServiceImpl;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,6 +18,8 @@ import jakarta.validation.Valid;
 
 @Controller
 public class RatingController {
+
+	private static final Logger logger = LogManager.getLogger(RatingController.class);
 
 	@Autowired
 	private RatingServiceImpl ratingServiceImpl;
@@ -34,10 +38,12 @@ public class RatingController {
 	@PostMapping("/rating/validate")
 	public String validate(@Valid Rating rating, BindingResult result, Model model) {
 		if (result.hasErrors()) {
+			logger.warn("Ajout impossible, les données sont incorrect pour ce rating");
 			return "rating/add";
 		}
 		ratingServiceImpl.saveRating(rating);
 		model.addAttribute("ratings", ratingServiceImpl.getAllRatings());
+		logger.info("Les données sont bien ajouté avec succès pour le rating {}", rating.getMoodysRating());
 		return "rating/list";
 	}
 
@@ -52,10 +58,13 @@ public class RatingController {
 	public String updateRating(@PathVariable("id") Integer id, @Valid Rating rating, BindingResult result,
 			Model model) {
 		if (result.hasErrors()) {
+			logger.warn("Modification impossible, les données sont incorrect pour ce rating");
 			return "rating/update";
 		}
 		rating.setId(id);
 		ratingServiceImpl.saveRating(rating);
+		logger.info("Les données du rating ont bien été modifié avec succès pour le rating {}",
+				rating.getMoodysRating());
 		return "redirect:/rating/list";
 	}
 
@@ -63,6 +72,7 @@ public class RatingController {
 	public String deleteRating(@PathVariable("id") Integer id, Model model) {
 		Rating rating = ratingServiceImpl.getRatingById(id);
 		ratingServiceImpl.deleteRatingById(rating.getId());
+		logger.info("Le rating {} à bien été supprimé.", rating.getMoodysRating());
 		return "redirect:/rating/list";
 	}
 }

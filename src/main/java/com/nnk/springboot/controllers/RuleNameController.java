@@ -3,6 +3,8 @@ package com.nnk.springboot.controllers;
 import com.nnk.springboot.domain.RuleName;
 import com.nnk.springboot.services.RuleNameServiceImpl;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,6 +18,8 @@ import jakarta.validation.Valid;
 
 @Controller
 public class RuleNameController {
+
+	private static final Logger logger = LogManager.getLogger(RuleNameController.class);
 
 	@Autowired
 	private RuleNameServiceImpl ruleNameServiceImpl;
@@ -34,10 +38,12 @@ public class RuleNameController {
 	@PostMapping("/ruleName/validate")
 	public String validate(@Valid RuleName ruleName, BindingResult result, Model model) {
 		if (result.hasErrors()) {
+			logger.warn("Ajout impossible, les données sont incorrect pour ce ruleName");
 			return "ruleName/add";
 		}
 		ruleNameServiceImpl.saveRuleName(ruleName);
 		model.addAttribute("ruleNames", ruleNameServiceImpl.getAllRulesNames());
+		logger.info("Les données sont bien ajouté avec succès pour le ruleName {}", ruleName.getName());
 		return "ruleName/list";
 	}
 
@@ -52,10 +58,12 @@ public class RuleNameController {
 	public String updateRuleName(@PathVariable("id") Integer id, @Valid RuleName ruleName, BindingResult result,
 			Model model) {
 		if (result.hasErrors()) {
+			logger.warn("Modification impossible, les données sont incorrect pour ce ruleName");
 			return "ruleName/update";
 		}
 		ruleName.setId(id);
 		ruleNameServiceImpl.saveRuleName(ruleName);
+		logger.info("Les données du ruleName ont bien été modifié avec succès pour le ruleName {}", ruleName.getName());
 		return "redirect:/ruleName/list";
 	}
 
@@ -64,6 +72,7 @@ public class RuleNameController {
 		RuleName ruleName = ruleNameServiceImpl.getRuleNameById(id);
 		ruleNameServiceImpl.deleteRuleNameById(ruleName.getId());
 		model.addAttribute("ruleNames", ruleNameServiceImpl.getAllRulesNames());
+		logger.info("Le ruleName {} à bien été supprimé.", ruleName.getName());
 		return "redirect:/ruleName/list";
 	}
 }

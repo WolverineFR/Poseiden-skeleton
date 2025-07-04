@@ -2,6 +2,9 @@ package com.nnk.springboot.controllers;
 
 import com.nnk.springboot.domain.User;
 import com.nnk.springboot.repositories.UserRepository;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -16,61 +19,69 @@ import jakarta.validation.Valid;
 
 @Controller
 public class UserController {
-    @Autowired
-    private UserRepository userRepository;
 
-    @RequestMapping("/user/list")
-    public String home(Model model)
-    {
-        model.addAttribute("users", userRepository.findAll());
-        return "user/list";
-    }
+	private static final Logger logger = LogManager.getLogger(UserController.class);
 
-    @GetMapping("/user/add")
-    public String addUser(User bid) {
-        return "user/add";
-    }
+	@Autowired
+	private UserRepository userRepository;
 
-    @PostMapping("/user/validate")
-    public String validate(@Valid User user, BindingResult result, Model model) {
-        if (!result.hasErrors()) {
-            BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-            user.setPassword(encoder.encode(user.getPassword()));
-            userRepository.save(user);
-            model.addAttribute("users", userRepository.findAll());
-            return "redirect:/user/list";
-        }
-        return "user/add";
-    }
+	@RequestMapping("/user/list")
+	public String home(Model model) {
+		model.addAttribute("users", userRepository.findAll());
+		return "user/list";
+	}
 
-    @GetMapping("/user/update/{id}")
-    public String showUpdateForm(@PathVariable("id") Integer id, Model model) {
-        User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid user Id:" + id));
-        user.setPassword("");
-        model.addAttribute("user", user);
-        return "user/update";
-    }
+	@GetMapping("/user/add")
+	public String addUser(User bid) {
+		return "user/add";
+	}
 
-    @PostMapping("/user/update/{id}")
-    public String updateUser(@PathVariable("id") Integer id, @Valid User user,
-                             BindingResult result, Model model) {
-        if (result.hasErrors()) {
-            return "user/update";
-        }
+	@PostMapping("/user/validate")
+	public String validate(@Valid User user, BindingResult result, Model model) {
+		if (!result.hasErrors()) {
+			BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+			user.setPassword(encoder.encode(user.getPassword()));
+			userRepository.save(user);
+			model.addAttribute("users", userRepository.findAll());
+			logger.info("Les données sont bien ajouté avec succès pour cet user {}", user.getUsername());
+			return "redirect:/user/list";
+		}
+		logger.warn("Ajout impossible, les données sont incorrect pour cet user");
+		return "user/add";
+	}
 
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        user.setPassword(encoder.encode(user.getPassword()));
-        user.setId(id);
-        userRepository.save(user);
-        model.addAttribute("users", userRepository.findAll());
-        return "redirect:/user/list";
-    }
+	@GetMapping("/user/update/{id}")
+	public String showUpdateForm(@PathVariable("id") Integer id, Model model) {
+		User user = userRepository.findById(id)
+				.orElseThrow(() -> new IllegalArgumentException("Invalid user Id:" + id));
+		user.setPassword("");
+		model.addAttribute("user", user);
+		return "user/update";
+	}
 
-    @GetMapping("/user/delete/{id}")
-    public String deleteUser(@PathVariable("id") Integer id, Model model) {
-        User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid user Id:" + id));
-        userRepository.delete(user);
-        model.addAttribute("users", userRepository.findAll());
-        return "redirect:/user/list";
-    }
+	@PostMapping("/user/update/{id}")
+	public String updateUser(@PathVariable("id") Integer id, @Valid User user, BindingResult result, Model model) {
+		if (result.hasErrors()) {
+			logger.warn("Modification impossible, les données sont incorrect pour cet user");
+			return "user/update";
+		}
+
+		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+		user.setPassword(encoder.encode(user.getPassword()));
+		user.setId(id);
+		userRepository.save(user);
+		model.addAttribute("users", userRepository.findAll());
+		logger.info("Les données utilisateur ont bien été modifié avec succès pour l'user {}", user.getUsername());
+		return "redirect:/user/list";
+	}
+
+	@GetMapping("/user/delete/{id}")
+	public String deleteUser(@PathVariable("id") Integer id, Model model) {
+		User user = userRepository.findById(id)
+				.orElseThrow(() -> new IllegalArgumentException("Invalid user Id:" + id));
+		userRepository.delete(user);
+		model.addAttribute("users", userRepository.findAll());
+		logger.info("L'user {} à bien été supprimé.", user.getUsername());
+		return "redirect:/user/list";
+	}
 }

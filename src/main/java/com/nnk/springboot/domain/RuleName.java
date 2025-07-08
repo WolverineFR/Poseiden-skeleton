@@ -1,25 +1,32 @@
 package com.nnk.springboot.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "rulename")
 public class RuleName {
 	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Integer id;
 
-    private String name;
+	@NotBlank
+	private String name;
 
-    private String description;
+	@NotBlank
+	private String description;
 
-    private String json;
+	@NotBlank
+	private String json;
 
-    private String template;
+	@NotBlank
+	private String template;
 
-    private String sqlStr;
+	@NotBlank
+	private String sqlStr;
 
-    private String sqlPart;
+	@NotBlank
+	private String sqlPart;
 
 	public Integer getId() {
 		return id;

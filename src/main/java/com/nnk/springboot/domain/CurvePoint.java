@@ -2,6 +2,7 @@ package com.nnk.springboot.domain;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 
 import java.sql.Timestamp;
 
@@ -18,8 +19,12 @@ public class CurvePoint {
 
 	    private Timestamp asOfDate;
 
+	    @PositiveOrZero
+	    @NotNull
 	    private Double term;
 
+	    @PositiveOrZero
+	    @NotNull
 	    private Double value;
 
 	    private Timestamp creationDate;

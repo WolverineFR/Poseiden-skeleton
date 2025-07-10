@@ -43,7 +43,7 @@ public class CurveController {
 		}
 		curvePointServiceImpl.saveCurvePoint(curvePoint);
 		model.addAttribute("curvePoints", curvePointServiceImpl.getAllCurves());
-		logger.info("Les données sont bien ajouté avec succès pour le curve point : {}", curvePoint.getId());
+		logger.info("Les données sont bien ajouté avec succès pour le curvePoint ID numéro : {}", curvePoint.getCurveId());
 		return "curvePoint/list";
 	}
 
@@ -58,12 +58,12 @@ public class CurveController {
 	public String updateBid(@PathVariable("id") Integer id, @Valid CurvePoint curvePoint, BindingResult result,
 			Model model) {
 		if (result.hasErrors()) {
-			logger.warn("Modification impossible, les données sont incorrect pour ce curve point");
+			logger.warn("Modification impossible, les données sont incorrect pour le curve point avec l'id : {}",curvePoint.getId());
 			return "curvePoint/update";
 		}
 		curvePoint.setId(id);
 		curvePointServiceImpl.saveCurvePoint(curvePoint);
-		logger.info("Les données du curve point ont bien été modifié avec succès pour le curve point : {}",
+		logger.info("Les données du curve point ont bien été modifié avec succès pour le curve point avec l'id : {}",
 				curvePoint.getId());
 		return "redirect:/curvePoint/list";
 	}

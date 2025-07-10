@@ -1,4 +1,4 @@
-package com.nnk.springboot;
+package com.nnk.springboot.service;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -25,6 +25,7 @@ public class TradeTest {
 		Trade trade = new Trade();
 		trade.setAccount("Trade Account");
 		trade.setType("Type");
+		trade.setBuyQuantity(3.0);
 
 		// Save
 		trade = tradeRepository.save(trade);

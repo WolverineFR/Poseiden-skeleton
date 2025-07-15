@@ -24,18 +24,17 @@ public class SpringSecurityConfig {
 		return http
 
 				.authorizeHttpRequests(auth -> auth
-						.requestMatchers("/", "/home.html", "/app/login", "/app/login?error=true", "/register",
+						.requestMatchers("/", "/home.html", "/app/login", "/app/login?error=true",
 								"/css/**", "/403", "/app/error")
 						.permitAll()
 						.requestMatchers("/bidList/**", "/curvePoint/**", "/rating/**", "/ruleName/**", "/trade/**",
 								"secure/article-details")
 						.hasAnyRole("USER", "ADMIN").requestMatchers("/admin/**", "/user/**").hasRole("ADMIN")
 						.anyRequest().authenticated())
-				.formLogin(form -> form.defaultSuccessUrl("/", true).permitAll())
-				.logout(logout -> logout.logoutUrl("/app-logout").logoutSuccessUrl("/login?logout").permitAll())
-				.exceptionHandling(exception -> exception.accessDeniedPage("/app/error"))
-
-				.build();
+				.formLogin(form -> form.loginPage("/app/login").usernameParameter("username").passwordParameter("password")
+						.defaultSuccessUrl("/", true).permitAll())
+				.logout(logout -> logout.logoutUrl("/app-logout").logoutSuccessUrl("/app/login?logout").permitAll())
+				.exceptionHandling(exception -> exception.accessDeniedPage("/app/error")).build();
 	}
 
 	@Bean

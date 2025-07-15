@@ -19,7 +19,7 @@ public class LoginControllerTest {
 
     @Test
     public void loginSuccess() throws Exception {
-        mockMvc.perform(formLogin("/login")
+        mockMvc.perform(formLogin("/app/login")
                 .user("admin")
                 .password("admin"))
             .andExpect(authenticated());
@@ -27,7 +27,7 @@ public class LoginControllerTest {
 
     @Test
     public void loginFailure() throws Exception {
-        mockMvc.perform(formLogin("/login")
+        mockMvc.perform(formLogin("/app/login")
                 .user("invalidUser")
                 .password("wrongPassword"))
             .andExpect(unauthenticated());

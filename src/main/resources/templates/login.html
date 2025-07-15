@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<title> Spring Boot </title>
+	<link rel="stylesheet" href="../../css/bootstrap.min.css" />
+</head>
+
+<body class="d-flex align-items-center justify-content-center" style="height: 100vh;">
+	<div class="container">
+		<div class="row justify-content-center">
+			<div class="col-md-4">
+				<div class="card">
+					<div class="card-body">
+						<h3 class="card-title text-center mb-4">Login with Username and Password</h3>
+						<div th:if="${param.error}" class="alert alert-danger" role="alert">
+							Invalid username or password.
+						</div>
+						<form th:action="@{/app/login}" method="post">
+							<div class="mb-3">
+								<label for="username" class="form-label">Username :</label>
+								<input type="text" id="username" name="username" class="form-control"
+									placeholder="Enter username" required />
+							</div>
+							<div class="mb-3">
+								<label for="password" class="form-label">Password :</label>
+								<input type="password" id="password" name="password" class="form-control"
+									placeholder="Enter password" required />
+							</div>
+							<div class="d-grid">
+								<button type="submit" class="btn btn-primary">Login</button>
+							</div>
+						</form>
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+
+</html>

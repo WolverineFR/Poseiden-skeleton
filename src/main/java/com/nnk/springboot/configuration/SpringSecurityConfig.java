@@ -22,17 +22,14 @@ public class SpringSecurityConfig {
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		return http
-
 				.authorizeHttpRequests(auth -> auth
-						.requestMatchers("/", "/home.html", "/app/login", "/app/login?error=true",
-								"/css/**", "/403", "/app/error")
+						.requestMatchers("/", "/home.html", "/app/login", "/app/login?error=true", "/css/**", "/403","/app/error")
 						.permitAll()
-						.requestMatchers("/bidList/**", "/curvePoint/**", "/rating/**", "/ruleName/**", "/trade/**",
-								"secure/article-details")
+						.requestMatchers("/bidList/**", "/curvePoint/**", "/rating/**", "/ruleName/**", "/trade/**","secure/article-details")
 						.hasAnyRole("USER", "ADMIN").requestMatchers("/admin/**", "/user/**").hasRole("ADMIN")
 						.anyRequest().authenticated())
-				.formLogin(form -> form.loginPage("/app/login").usernameParameter("username").passwordParameter("password")
-						.defaultSuccessUrl("/", true).permitAll())
+				.formLogin(form -> form.loginPage("/app/login").usernameParameter("username")
+						.passwordParameter("password").defaultSuccessUrl("/", true).permitAll())
 				.logout(logout -> logout.logoutUrl("/app-logout").logoutSuccessUrl("/app/login?logout").permitAll())
 				.exceptionHandling(exception -> exception.accessDeniedPage("/app/error")).build();
 	}

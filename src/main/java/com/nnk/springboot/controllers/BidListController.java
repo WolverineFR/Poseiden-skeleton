@@ -39,14 +39,27 @@ public class BidListController {
 
 	@PostMapping("/bidList/validate")
 	public String validate(@Valid BidList bid, BindingResult result, Model model) {
-		if (result.hasErrors()) {
-			logger.warn("Ajout impossible, les données sont incorrect pour ce bid");
+		try {
+			if (bid.getAccount() == null || bid.getAccount().trim().isEmpty() || bid.getType() == null
+					|| bid.getType().trim().isEmpty() || bid.getBidQuantity() == null) {
+				throw new IllegalArgumentException("Les champs ne doivent pas être vides");
+			}
+
+			if (result.hasErrors()) {
+				logger.warn("Ajout impossible, les données sont incorrectes pour ce bid");
+				return "bidList/add";
+			}
+
+			bidListServiceImpl.saveBid(bid);
+			model.addAttribute("bidLists", bidListServiceImpl.getAllBids());
+			logger.info("Les données ont été ajoutées avec succès pour le bid : {}", bid.getAccount());
+			return "bidList/list";
+
+		} catch (IllegalArgumentException e) {
+			logger.warn("Ajout échoué : {}", e.getMessage());
+			model.addAttribute("errorMessage", e.getMessage());
 			return "bidList/add";
 		}
-		bidListServiceImpl.saveBid(bid);
-		model.addAttribute("bidLists", bidListServiceImpl.getAllBids());
-		logger.info("Les données sont bien ajouté avec succès pour le bid : {}", bid.getAccount());
-		return "bidList/list";
 	}
 
 	@GetMapping("/bidList/update/{id}")
@@ -58,14 +71,27 @@ public class BidListController {
 
 	@PostMapping("/bidList/update/{id}")
 	public String updateBid(@PathVariable("id") Integer id, @Valid BidList bidList, BindingResult result, Model model) {
-		if (result.hasErrors()) {
-			logger.warn("Modification impossible, les données sont incorrect pour ce bid");
+		try {
+			if (bidList.getAccount() == null || bidList.getAccount().trim().isEmpty() || bidList.getType() == null
+					|| bidList.getType().trim().isEmpty() || bidList.getBidQuantity() == null) {
+				throw new IllegalArgumentException("Les champs ne doivent pas être vides");
+			}
+
+			if (result.hasErrors()) {
+				logger.warn("Modification impossible, les données sont incorrectes pour ce bid");
+				return "bidList/update";
+			}
+
+			bidList.setBidListId(id);
+			bidListServiceImpl.saveBid(bidList);
+			logger.info("Les données ont été modifiées avec succès pour le bid : {}", bidList.getAccount());
+			return "redirect:/bidList/list";
+
+		} catch (IllegalArgumentException e) {
+			logger.warn("Mise à jour échouée : {}", e.getMessage());
+			model.addAttribute("errorMessage", e.getMessage());
 			return "bidList/update";
 		}
-		bidList.setBidListId(id);
-		bidListServiceImpl.saveBid(bidList);
-		logger.info("Les données du bid ont bien été modifié avec succès pour le bid : {}", bidList.getAccount());
-		return "redirect:/bidList/list";
 	}
 
 	@GetMapping("/bidList/delete/{id}")

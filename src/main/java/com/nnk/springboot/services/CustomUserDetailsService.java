@@ -21,9 +21,9 @@ public class CustomUserDetailsService implements UserDetailsService {
 	private UserRepository userRepository;
 
 	/**
-	 * Charge un utilisateur par son email (nom d'utilisateur pour Spring Security).
+	 * Charge un utilisateur par son username.
 	 * 
-	 * @param email l'adresse e-mail de l'utilisateur
+	 * @param username nom utilisateur de l'utilisateur
 	 * @return UserDetails utilisé par Spring Security pour l'authentification
 	 * @throws UsernameNotFoundException si l'utilisateur n'est pas trouvé
 	 */

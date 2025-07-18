@@ -37,14 +37,30 @@ public class RuleNameController {
 
 	@PostMapping("/ruleName/validate")
 	public String validate(@Valid RuleName ruleName, BindingResult result, Model model) {
-		if (result.hasErrors()) {
-			logger.warn("Ajout impossible, les données sont incorrect pour ce ruleName");
+		try {
+			if (ruleName.getName() == null || ruleName.getName().trim().isEmpty() || ruleName.getDescription() == null
+					|| ruleName.getDescription().trim().isEmpty() || ruleName.getJson() == null
+					|| ruleName.getJson().trim().isEmpty() || ruleName.getTemplate() == null
+					|| ruleName.getTemplate().trim().isEmpty() || ruleName.getSqlStr() == null
+					|| ruleName.getSqlStr().trim().isEmpty() || ruleName.getSqlPart() == null
+					|| ruleName.getSqlPart().trim().isEmpty()) {
+				throw new IllegalArgumentException("Les champs ne doivent pas être vides");
+			}
+
+			if (result.hasErrors()) {
+				logger.warn("Ajout impossible, les données sont incorrect pour ce ruleName");
+				return "ruleName/add";
+			}
+			ruleNameServiceImpl.saveRuleName(ruleName);
+			model.addAttribute("ruleNames", ruleNameServiceImpl.getAllRulesNames());
+			logger.info("Les données sont bien ajouté avec succès pour le ruleName {}", ruleName.getName());
+			return "ruleName/list";
+
+		} catch (IllegalArgumentException e) {
+			logger.warn("Ajout échoué : {}", e.getMessage());
+			model.addAttribute("errorMessage", e.getMessage());
 			return "ruleName/add";
 		}
-		ruleNameServiceImpl.saveRuleName(ruleName);
-		model.addAttribute("ruleNames", ruleNameServiceImpl.getAllRulesNames());
-		logger.info("Les données sont bien ajouté avec succès pour le ruleName {}", ruleName.getName());
-		return "ruleName/list";
 	}
 
 	@GetMapping("/ruleName/update/{id}")
@@ -57,14 +73,31 @@ public class RuleNameController {
 	@PostMapping("/ruleName/update/{id}")
 	public String updateRuleName(@PathVariable("id") Integer id, @Valid RuleName ruleName, BindingResult result,
 			Model model) {
-		if (result.hasErrors()) {
-			logger.warn("Modification impossible, les données sont incorrect pour ce ruleName");
+		try {
+			if (ruleName.getName() == null || ruleName.getName().trim().isEmpty() || ruleName.getDescription() == null
+					|| ruleName.getDescription().trim().isEmpty() || ruleName.getJson() == null
+					|| ruleName.getJson().trim().isEmpty() || ruleName.getTemplate() == null
+					|| ruleName.getTemplate().trim().isEmpty() || ruleName.getSqlStr() == null
+					|| ruleName.getSqlStr().trim().isEmpty() || ruleName.getSqlPart() == null
+					|| ruleName.getSqlPart().trim().isEmpty()) {
+				throw new IllegalArgumentException("Les champs ne doivent pas être vides");
+			}
+
+			if (result.hasErrors()) {
+				logger.warn("Modification impossible, les données sont incorrect pour ce ruleName");
+				return "ruleName/update";
+			}
+			ruleName.setId(id);
+			ruleNameServiceImpl.saveRuleName(ruleName);
+			logger.info("Les données du ruleName ont bien été modifié avec succès pour le ruleName {}",
+					ruleName.getName());
+			return "redirect:/ruleName/list";
+
+		} catch (IllegalArgumentException e) {
+			logger.warn("Ajout échoué : {}", e.getMessage());
+			model.addAttribute("errorMessage", e.getMessage());
 			return "ruleName/update";
 		}
-		ruleName.setId(id);
-		ruleNameServiceImpl.saveRuleName(ruleName);
-		logger.info("Les données du ruleName ont bien été modifié avec succès pour le ruleName {}", ruleName.getName());
-		return "redirect:/ruleName/list";
 	}
 
 	@GetMapping("/ruleName/delete/{id}")

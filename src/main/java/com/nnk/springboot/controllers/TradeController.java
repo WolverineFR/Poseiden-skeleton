@@ -38,14 +38,25 @@ public class TradeController {
 
 	@PostMapping("/trade/validate")
 	public String validate(@Valid Trade trade, BindingResult result, Model model) {
-		if (result.hasErrors()) {
-			logger.warn("Ajout impossible, les données sont incorrect pour ce trade");
+		try {
+			if (trade.getAccount() == null || trade.getAccount().trim().isEmpty() || trade.getType() == null
+					|| trade.getType().trim().isEmpty() || trade.getBuyQuantity() == null) {
+				throw new IllegalArgumentException("Les champs ne doivent pas être vides");
+			}
+			if (result.hasErrors()) {
+				logger.warn("Ajout impossible, les données sont incorrect pour ce trade");
+				return "trade/add";
+			}
+			tradeServiceImpl.saveTrade(trade);
+			model.addAttribute("trades", tradeServiceImpl.getAllTrades());
+			logger.info("Les données sont bien ajouté avec succès pour le trade {}", trade.getAccount());
+			return "trade/list";
+
+		} catch (IllegalArgumentException e) {
+			logger.warn("Ajout échoué : {}", e.getMessage());
+			model.addAttribute("errorMessage", e.getMessage());
 			return "trade/add";
 		}
-		tradeServiceImpl.saveTrade(trade);
-		model.addAttribute("trades", tradeServiceImpl.getAllTrades());
-		logger.info("Les données sont bien ajouté avec succès pour le trade {}", trade.getAccount());
-		return "trade/list";
 	}
 
 	@GetMapping("/trade/update/{id}")
@@ -57,14 +68,25 @@ public class TradeController {
 
 	@PostMapping("/trade/update/{id}")
 	public String updateTrade(@PathVariable("id") Integer id, @Valid Trade trade, BindingResult result, Model model) {
-		if (result.hasErrors()) {
-			logger.warn("Modification impossible, les données sont incorrect pour ce trade");
+		try {
+			if (trade.getAccount() == null || trade.getAccount().trim().isEmpty() || trade.getType() == null
+					|| trade.getType().trim().isEmpty() || trade.getBuyQuantity() == null) {
+				throw new IllegalArgumentException("Les champs ne doivent pas être vides");
+			}
+			if (result.hasErrors()) {
+				logger.warn("Modification impossible, les données sont incorrect pour ce trade");
+				return "trade/update";
+			}
+			trade.setTradeId(id);
+			tradeServiceImpl.saveTrade(trade);
+			logger.info("Les données du trade ont bien été modifié avec succès pour le trade {}", trade.getAccount());
+			return "redirect:/trade/list";
+
+		} catch (IllegalArgumentException e) {
+			logger.warn("Ajout échoué : {}", e.getMessage());
+			model.addAttribute("errorMessage", e.getMessage());
 			return "trade/update";
 		}
-		trade.setTradeId(id);
-		tradeServiceImpl.saveTrade(trade);
-		logger.info("Les données du trade ont bien été modifié avec succès pour le trade {}", trade.getAccount());
-		return "redirect:/trade/list";
 	}
 
 	@GetMapping("/trade/delete/{id}")

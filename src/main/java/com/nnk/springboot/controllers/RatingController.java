@@ -37,14 +37,28 @@ public class RatingController {
 
 	@PostMapping("/rating/validate")
 	public String validate(@Valid Rating rating, BindingResult result, Model model) {
-		if (result.hasErrors()) {
-			logger.warn("Ajout impossible, les données sont incorrect pour ce rating");
+		try {
+			if (rating.getMoodysRating() == null || rating.getMoodysRating().trim().isEmpty()
+					|| rating.getSandPRating() == null || rating.getSandPRating().trim().isEmpty()
+					|| rating.getFitchRating() == null || rating.getFitchRating().trim().isEmpty()
+					|| rating.getOrderNumber() == null) {
+				throw new IllegalArgumentException("Les champs ne doivent pas être vides");
+			}
+
+			if (result.hasErrors()) {
+				logger.warn("Ajout impossible, les données sont incorrect pour ce rating");
+				return "rating/add";
+			}
+			ratingServiceImpl.saveRating(rating);
+			model.addAttribute("ratings", ratingServiceImpl.getAllRatings());
+			logger.info("Les données sont bien ajouté avec succès pour le rating {}", rating.getMoodysRating());
+			return "rating/list";
+
+		} catch (IllegalArgumentException e) {
+			logger.warn("Ajout échoué : {}", e.getMessage());
+			model.addAttribute("errorMessage", e.getMessage());
 			return "rating/add";
 		}
-		ratingServiceImpl.saveRating(rating);
-		model.addAttribute("ratings", ratingServiceImpl.getAllRatings());
-		logger.info("Les données sont bien ajouté avec succès pour le rating {}", rating.getMoodysRating());
-		return "rating/list";
 	}
 
 	@GetMapping("/rating/update/{id}")
@@ -57,15 +71,29 @@ public class RatingController {
 	@PostMapping("/rating/update/{id}")
 	public String updateRating(@PathVariable("id") Integer id, @Valid Rating rating, BindingResult result,
 			Model model) {
-		if (result.hasErrors()) {
-			logger.warn("Modification impossible, les données sont incorrect pour ce rating");
+		try {
+			if (rating.getMoodysRating() == null || rating.getMoodysRating().trim().isEmpty()
+					|| rating.getSandPRating() == null || rating.getSandPRating().trim().isEmpty()
+					|| rating.getFitchRating() == null || rating.getFitchRating().trim().isEmpty()
+					|| rating.getOrderNumber() == null) {
+				throw new IllegalArgumentException("Les champs ne doivent pas être vides");
+			}
+
+			if (result.hasErrors()) {
+				logger.warn("Modification impossible, les données sont incorrect pour ce rating");
+				return "rating/update";
+			}
+			rating.setId(id);
+			ratingServiceImpl.saveRating(rating);
+			logger.info("Les données du rating ont bien été modifié avec succès pour le rating {}",
+					rating.getMoodysRating());
+			return "redirect:/rating/list";
+
+		} catch (IllegalArgumentException e) {
+			logger.warn("Ajout échoué : {}", e.getMessage());
+			model.addAttribute("errorMessage", e.getMessage());
 			return "rating/update";
 		}
-		rating.setId(id);
-		ratingServiceImpl.saveRating(rating);
-		logger.info("Les données du rating ont bien été modifié avec succès pour le rating {}",
-				rating.getMoodysRating());
-		return "redirect:/rating/list";
 	}
 
 	@GetMapping("/rating/delete/{id}")

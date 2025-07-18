@@ -38,16 +38,36 @@ public class UserController {
 
 	@PostMapping("/user/validate")
 	public String validate(@Valid User user, BindingResult result, Model model) {
-		if (!result.hasErrors()) {
-			BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-			user.setPassword(encoder.encode(user.getPassword()));
-			userRepository.save(user);
-			model.addAttribute("users", userRepository.findAll());
-			logger.info("Les données sont bien ajouté avec succès pour cet user {}", user.getUsername());
-			return "redirect:/user/list";
+		try {
+			if (user.getUsername() == null || user.getUsername().trim().isEmpty() || user.getPassword() == null
+					|| user.getPassword().trim().isEmpty() || user.getFullname() == null
+					|| user.getFullname().trim().isEmpty() || user.getRole() == null
+					|| user.getRole().trim().isEmpty()) {
+				throw new IllegalArgumentException("Tous les champs sont obligatoires.");
+			}
+
+			if (!user.getPassword()
+					.matches("^(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>/?]).{8,}$")) {
+				throw new IllegalArgumentException(
+						"Le mot de passe doit contenir au moins une majuscule, un chiffre, un symbole et faire 8 caractères minimum.");
+			}
+
+			if (!result.hasErrors()) {
+				BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+				user.setPassword(encoder.encode(user.getPassword()));
+				userRepository.save(user);
+				model.addAttribute("users", userRepository.findAll());
+				logger.info("Les données sont bien ajouté avec succès pour cet user {}", user.getUsername());
+				return "redirect:/user/list";
+			}
+			logger.warn("Ajout impossible, les données sont incorrect pour cet user");
+			return "user/add";
+
+		} catch (IllegalArgumentException e) {
+			logger.warn("Erreur lors de l'ajout de l'utilisateur : {}", e.getMessage());
+			model.addAttribute("errorMessage", e.getMessage());
+			return "user/add";
 		}
-		logger.warn("Ajout impossible, les données sont incorrect pour cet user");
-		return "user/add";
 	}
 
 	@GetMapping("/user/update/{id}")
@@ -61,18 +81,38 @@ public class UserController {
 
 	@PostMapping("/user/update/{id}")
 	public String updateUser(@PathVariable("id") Integer id, @Valid User user, BindingResult result, Model model) {
-		if (result.hasErrors()) {
-			logger.warn("Modification impossible, les données sont incorrect pour cet user");
+		try {
+			if (user.getUsername() == null || user.getUsername().trim().isEmpty() || user.getPassword() == null
+					|| user.getPassword().trim().isEmpty() || user.getFullname() == null
+					|| user.getFullname().trim().isEmpty() || user.getRole() == null
+					|| user.getRole().trim().isEmpty()) {
+				throw new IllegalArgumentException("Tous les champs sont obligatoires.");
+			}
+
+			if (!user.getPassword()
+					.matches("^(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>/?]).{8,}$")) {
+				throw new IllegalArgumentException(
+						"Le mot de passe doit contenir au moins une majuscule, un chiffre, un symbole et faire 8 caractères minimum.");
+			}
+
+			if (result.hasErrors()) {
+				logger.warn("Modification impossible, les données sont incorrect pour cet user");
+				return "user/update";
+			}
+
+			BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+			user.setPassword(encoder.encode(user.getPassword()));
+			user.setId(id);
+			userRepository.save(user);
+			model.addAttribute("users", userRepository.findAll());
+			logger.info("Les données utilisateur ont bien été modifié avec succès pour l'user {}", user.getUsername());
+			return "redirect:/user/list";
+
+		} catch (IllegalArgumentException e) {
+			logger.warn("Erreur lors de l'ajout de l'utilisateur : {}", e.getMessage());
+			model.addAttribute("errorMessage", e.getMessage());
 			return "user/update";
 		}
-
-		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-		user.setPassword(encoder.encode(user.getPassword()));
-		user.setId(id);
-		userRepository.save(user);
-		model.addAttribute("users", userRepository.findAll());
-		logger.info("Les données utilisateur ont bien été modifié avec succès pour l'user {}", user.getUsername());
-		return "redirect:/user/list";
 	}
 
 	@GetMapping("/user/delete/{id}")

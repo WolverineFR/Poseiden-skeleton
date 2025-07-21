@@ -11,10 +11,10 @@
 	<div class="container">
 		<div class="row">
 			<div class="col-6">
-				<a href="/bidList/list">Bid List</a>
-				<a href="/curvePoint/list">Curve Points</a>
-				<a href="/rating/list">Ratings</a>
-				<a href="/trade/list">Trade</a>
+				<a href="/bidList/list">Bid List</a>&nbsp;|&nbsp;
+				<a href="/curvePoint/list">Curve Points</a>&nbsp;|&nbsp;
+				<a href="/rating/list">Ratings</a>&nbsp;|&nbsp;
+				<a href="/trade/list">Trade</a>&nbsp;|&nbsp;
 				<a href="/ruleName/list">Rule</a>
 			</div>
 			<div class="col-6 text-right">
@@ -47,7 +47,7 @@
 						<td th:text="${bidList.type}"></td>
 						<td th:text="${bidList.bidQuantity}"></td>
 						<td style="width: 15%" class="text-center">
-							<a th:href="@{/bidList/update/{id}(id=${bidList.bidListId})}">Edit</a>
+							<a th:href="@{/bidList/update/{id}(id=${bidList.bidListId})}">Edit</a>&nbsp;|&nbsp;
 							<a th:href="@{/bidList/delete/{id}(id=${bidList.bidListId})}">Delete</a>
 						</td>
 					</tr>

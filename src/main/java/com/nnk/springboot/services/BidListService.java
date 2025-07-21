@@ -5,9 +5,12 @@ import java.util.List;
 import com.nnk.springboot.domain.BidList;
 
 public interface BidListService {
-	List<BidList> getAllBid();
+	List<BidList> getAllBids();
+
 	BidList getBidById(Integer id);
+
 	BidList saveBid(BidList bid);
-	void deleteBid(Integer id);
+
+	void deleteBidById(Integer id);
 
 }

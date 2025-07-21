@@ -1,6 +1,11 @@
 package com.nnk.springboot.controllers;
 
 import com.nnk.springboot.domain.RuleName;
+import com.nnk.springboot.services.RuleNameServiceImpl;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -13,42 +18,112 @@ import jakarta.validation.Valid;
 
 @Controller
 public class RuleNameController {
-    // TODO: Inject RuleName service
 
-    @RequestMapping("/ruleName/list")
-    public String home(Model model)
-    {
-        // TODO: find all RuleName, add to model
-        return "ruleName/list";
-    }
+	private static final Logger logger = LogManager.getLogger(RuleNameController.class);
 
-    @GetMapping("/ruleName/add")
-    public String addRuleForm(RuleName bid) {
-        return "ruleName/add";
-    }
+	@Autowired
+	private RuleNameServiceImpl ruleNameServiceImpl;
 
-    @PostMapping("/ruleName/validate")
-    public String validate(@Valid RuleName ruleName, BindingResult result, Model model) {
-        // TODO: check data valid and save to db, after saving return RuleName list
-        return "ruleName/add";
-    }
+	/**
+	 * Affiche la liste des ruleName
+	 */
+	@RequestMapping("/ruleName/list")
+	public String home(Model model) {
+		model.addAttribute("ruleNames", ruleNameServiceImpl.getAllRulesNames());
+		return "ruleName/list";
+	}
 
-    @GetMapping("/ruleName/update/{id}")
-    public String showUpdateForm(@PathVariable("id") Integer id, Model model) {
-        // TODO: get RuleName by Id and to model then show to the form
-        return "ruleName/update";
-    }
+	/**
+	 * Affiche le formulaire d'ajout de ruleName
+	 */
+	@GetMapping("/ruleName/add")
+	public String addRuleForm(RuleName ruleName) {
+		return "ruleName/add";
+	}
 
-    @PostMapping("/ruleName/update/{id}")
-    public String updateRuleName(@PathVariable("id") Integer id, @Valid RuleName ruleName,
-                             BindingResult result, Model model) {
-        // TODO: check required fields, if valid call service to update RuleName and return RuleName list
-        return "redirect:/ruleName/list";
-    }
+	/**
+	 * Valide et enregistre un nouveau ruleName
+	 */
+	@PostMapping("/ruleName/validate")
+	public String validate(@Valid RuleName ruleName, BindingResult result, Model model) {
+		try {
+			if (ruleName.getName() == null || ruleName.getName().trim().isEmpty() || ruleName.getDescription() == null
+					|| ruleName.getDescription().trim().isEmpty() || ruleName.getJson() == null
+					|| ruleName.getJson().trim().isEmpty() || ruleName.getTemplate() == null
+					|| ruleName.getTemplate().trim().isEmpty() || ruleName.getSqlStr() == null
+					|| ruleName.getSqlStr().trim().isEmpty() || ruleName.getSqlPart() == null
+					|| ruleName.getSqlPart().trim().isEmpty()) {
+				throw new IllegalArgumentException("Les champs ne doivent pas être vides");
+			}
 
-    @GetMapping("/ruleName/delete/{id}")
-    public String deleteRuleName(@PathVariable("id") Integer id, Model model) {
-        // TODO: Find RuleName by Id and delete the RuleName, return to Rule list
-        return "redirect:/ruleName/list";
-    }
+			if (result.hasErrors()) {
+				logger.warn("Ajout impossible, les données sont incorrect pour ce ruleName");
+				return "ruleName/add";
+			}
+			ruleNameServiceImpl.saveRuleName(ruleName);
+			model.addAttribute("ruleNames", ruleNameServiceImpl.getAllRulesNames());
+			logger.info("Les données sont bien ajouté avec succès pour le ruleName {}", ruleName.getName());
+			return "ruleName/list";
+
+		} catch (IllegalArgumentException e) {
+			logger.warn("Ajout échoué : {}", e.getMessage());
+			model.addAttribute("errorMessage", e.getMessage());
+			return "ruleName/add";
+		}
+	}
+
+	/**
+	 * Affiche le formulaire de mise à jour d'un ruleName
+	 */
+	@GetMapping("/ruleName/update/{id}")
+	public String showUpdateForm(@PathVariable("id") Integer id, Model model) {
+		RuleName ruleName = ruleNameServiceImpl.getRuleNameById(id);
+		model.addAttribute("ruleName", ruleName);
+		return "ruleName/update";
+	}
+
+	/**
+	 * Met à jour un ruleName existant
+	 */
+	@PostMapping("/ruleName/update/{id}")
+	public String updateRuleName(@PathVariable("id") Integer id, @Valid RuleName ruleName, BindingResult result,
+			Model model) {
+		try {
+			if (ruleName.getName() == null || ruleName.getName().trim().isEmpty() || ruleName.getDescription() == null
+					|| ruleName.getDescription().trim().isEmpty() || ruleName.getJson() == null
+					|| ruleName.getJson().trim().isEmpty() || ruleName.getTemplate() == null
+					|| ruleName.getTemplate().trim().isEmpty() || ruleName.getSqlStr() == null
+					|| ruleName.getSqlStr().trim().isEmpty() || ruleName.getSqlPart() == null
+					|| ruleName.getSqlPart().trim().isEmpty()) {
+				throw new IllegalArgumentException("Les champs ne doivent pas être vides");
+			}
+
+			if (result.hasErrors()) {
+				logger.warn("Modification impossible, les données sont incorrect pour ce ruleName");
+				return "ruleName/update";
+			}
+			ruleName.setId(id);
+			ruleNameServiceImpl.saveRuleName(ruleName);
+			logger.info("Les données du ruleName ont bien été modifié avec succès pour le ruleName {}",
+					ruleName.getName());
+			return "redirect:/ruleName/list";
+
+		} catch (IllegalArgumentException e) {
+			logger.warn("Ajout échoué : {}", e.getMessage());
+			model.addAttribute("errorMessage", e.getMessage());
+			return "ruleName/update";
+		}
+	}
+
+	/**
+	 * Supprime un ruleName par son ID
+	 */
+	@GetMapping("/ruleName/delete/{id}")
+	public String deleteRuleName(@PathVariable("id") Integer id, Model model) {
+		RuleName ruleName = ruleNameServiceImpl.getRuleNameById(id);
+		ruleNameServiceImpl.deleteRuleNameById(ruleName.getId());
+		model.addAttribute("ruleNames", ruleNameServiceImpl.getAllRulesNames());
+		logger.info("Le ruleName {} à bien été supprimé.", ruleName.getName());
+		return "redirect:/ruleName/list";
+	}
 }

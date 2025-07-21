@@ -26,17 +26,26 @@ public class BidListController {
 	@Autowired
 	private BidListServiceImpl bidListServiceImpl;
 
+	/**
+	 * Affiche la liste des BidList
+	 */
 	@RequestMapping("/bidList/list")
 	public String home(Model model) {
 		model.addAttribute("bidLists", bidListServiceImpl.getAllBids());
 		return "bidList/list";
 	}
 
+	/**
+	 * Affiche le formulaire d'ajout de bid
+	 */
 	@GetMapping("/bidList/add")
 	public String addBidForm(BidList bid) {
 		return "bidList/add";
 	}
 
+	/**
+	 * Valide et enregistre un nouveau bid
+	 */
 	@PostMapping("/bidList/validate")
 	public String validate(@Valid BidList bid, BindingResult result, Model model) {
 		try {
@@ -62,6 +71,9 @@ public class BidListController {
 		}
 	}
 
+	/**
+	 * Affiche le formulaire de mise à jour d'un bid
+	 */
 	@GetMapping("/bidList/update/{id}")
 	public String showUpdateForm(@PathVariable("id") Integer id, Model model) {
 		BidList bid = bidListServiceImpl.getBidById(id);
@@ -69,6 +81,9 @@ public class BidListController {
 		return "bidList/update";
 	}
 
+	/**
+	 * Met à jour un bid existant
+	 */
 	@PostMapping("/bidList/update/{id}")
 	public String updateBid(@PathVariable("id") Integer id, @Valid BidList bidList, BindingResult result, Model model) {
 		try {
@@ -94,6 +109,9 @@ public class BidListController {
 		}
 	}
 
+	/**
+	 * Supprime un bid par son ID
+	 */
 	@GetMapping("/bidList/delete/{id}")
 	public String deleteBid(@PathVariable("id") Integer id, Model model) {
 		BidList bid = bidListServiceImpl.getBidById(id);

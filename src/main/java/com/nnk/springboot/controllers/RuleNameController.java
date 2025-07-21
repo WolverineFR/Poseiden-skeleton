@@ -24,17 +24,26 @@ public class RuleNameController {
 	@Autowired
 	private RuleNameServiceImpl ruleNameServiceImpl;
 
+	/**
+	 * Affiche la liste des ruleName
+	 */
 	@RequestMapping("/ruleName/list")
 	public String home(Model model) {
 		model.addAttribute("ruleNames", ruleNameServiceImpl.getAllRulesNames());
 		return "ruleName/list";
 	}
 
+	/**
+	 * Affiche le formulaire d'ajout de ruleName
+	 */
 	@GetMapping("/ruleName/add")
 	public String addRuleForm(RuleName ruleName) {
 		return "ruleName/add";
 	}
 
+	/**
+	 * Valide et enregistre un nouveau ruleName
+	 */
 	@PostMapping("/ruleName/validate")
 	public String validate(@Valid RuleName ruleName, BindingResult result, Model model) {
 		try {
@@ -63,6 +72,9 @@ public class RuleNameController {
 		}
 	}
 
+	/**
+	 * Affiche le formulaire de mise à jour d'un ruleName
+	 */
 	@GetMapping("/ruleName/update/{id}")
 	public String showUpdateForm(@PathVariable("id") Integer id, Model model) {
 		RuleName ruleName = ruleNameServiceImpl.getRuleNameById(id);
@@ -70,6 +82,9 @@ public class RuleNameController {
 		return "ruleName/update";
 	}
 
+	/**
+	 * Met à jour un ruleName existant
+	 */
 	@PostMapping("/ruleName/update/{id}")
 	public String updateRuleName(@PathVariable("id") Integer id, @Valid RuleName ruleName, BindingResult result,
 			Model model) {
@@ -100,6 +115,9 @@ public class RuleNameController {
 		}
 	}
 
+	/**
+	 * Supprime un ruleName par son ID
+	 */
 	@GetMapping("/ruleName/delete/{id}")
 	public String deleteRuleName(@PathVariable("id") Integer id, Model model) {
 		RuleName ruleName = ruleNameServiceImpl.getRuleNameById(id);

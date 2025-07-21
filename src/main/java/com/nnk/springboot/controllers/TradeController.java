@@ -25,17 +25,26 @@ public class TradeController {
 	@Autowired
 	private TradeServiceImpl tradeServiceImpl;
 
+	/**
+	 * Affiche la liste des trades
+	 */
 	@RequestMapping("/trade/list")
 	public String home(Model model) {
 		model.addAttribute("trades", tradeServiceImpl.getAllTrades());
 		return "trade/list";
 	}
 
+	/**
+	 * Affiche le formulaire d'ajout d'un trade
+	 */
 	@GetMapping("/trade/add")
 	public String addUser(Trade trade) {
 		return "trade/add";
 	}
 
+	/**
+	 * Valide et enregistre un nouveau trade
+	 */
 	@PostMapping("/trade/validate")
 	public String validate(@Valid Trade trade, BindingResult result, Model model) {
 		try {
@@ -59,6 +68,9 @@ public class TradeController {
 		}
 	}
 
+	/**
+	 * Affiche le formulaire de mise à jour d'un trade
+	 */
 	@GetMapping("/trade/update/{id}")
 	public String showUpdateForm(@PathVariable("id") Integer id, Model model) {
 		Trade trade = tradeServiceImpl.getTradeById(id);
@@ -66,6 +78,9 @@ public class TradeController {
 		return "trade/update";
 	}
 
+	/**
+	 * Met à jour un trade existant
+	 */
 	@PostMapping("/trade/update/{id}")
 	public String updateTrade(@PathVariable("id") Integer id, @Valid Trade trade, BindingResult result, Model model) {
 		try {
@@ -89,6 +104,9 @@ public class TradeController {
 		}
 	}
 
+	/**
+	 * Supprime un trade par son ID
+	 */
 	@GetMapping("/trade/delete/{id}")
 	public String deleteTrade(@PathVariable("id") Integer id, Model model) {
 		Trade trade = tradeServiceImpl.getTradeById(id);

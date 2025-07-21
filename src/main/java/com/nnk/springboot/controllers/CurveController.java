@@ -24,17 +24,26 @@ public class CurveController {
 	@Autowired
 	private CurvePointServiceImpl curvePointServiceImpl;
 
+	/**
+	 * Affiche la liste des CurvePoint
+	 */
 	@RequestMapping("/curvePoint/list")
 	public String home(Model model) {
 		model.addAttribute("curvePoints", curvePointServiceImpl.getAllCurves());
 		return "curvePoint/list";
 	}
 
+	/**
+	 * Affiche le formulaire d'ajout du CurvePoint
+	 */
 	@GetMapping("/curvePoint/add")
 	public String addBidForm(CurvePoint curvePoint) {
 		return "curvePoint/add";
 	}
 
+	/**
+	 * Valide et enregistre un nouveau CurvePoint
+	 */
 	@PostMapping("/curvePoint/validate")
 	public String validate(@Valid CurvePoint curvePoint, BindingResult result, Model model) {
 		try {
@@ -59,6 +68,9 @@ public class CurveController {
 		}
 	}
 
+	/**
+	 * Affiche le formulaire de mise à jour d'un CurvePoint
+	 */
 	@GetMapping("/curvePoint/update/{id}")
 	public String showUpdateForm(@PathVariable("id") Integer id, Model model) {
 		CurvePoint cp = curvePointServiceImpl.getCurveById(id);
@@ -66,6 +78,9 @@ public class CurveController {
 		return "curvePoint/update";
 	}
 
+	/**
+	 * Met à jour un CurvePoint existant
+	 */
 	@PostMapping("/curvePoint/update/{id}")
 	public String updateBid(@PathVariable("id") Integer id, @Valid CurvePoint curvePoint, BindingResult result,
 			Model model) {
@@ -92,6 +107,9 @@ public class CurveController {
 		}
 	}
 
+	/**
+	 * Supprime un CurvePoint par son ID
+	 */
 	@GetMapping("/curvePoint/delete/{id}")
 	public String deleteBid(@PathVariable("id") Integer id, Model model) {
 		CurvePoint cp = curvePointServiceImpl.getCurveById(id);

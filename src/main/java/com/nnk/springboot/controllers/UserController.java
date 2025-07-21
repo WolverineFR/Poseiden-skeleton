@@ -25,17 +25,26 @@ public class UserController {
 	@Autowired
 	private UserRepository userRepository;
 
+	/**
+	 * Affiche la liste des users
+	 */
 	@RequestMapping("/user/list")
 	public String home(Model model) {
 		model.addAttribute("users", userRepository.findAll());
 		return "user/list";
 	}
 
+	/**
+	 * Affiche le formulaire d'ajout de user
+	 */
 	@GetMapping("/user/add")
 	public String addUser(User user) {
 		return "user/add";
 	}
 
+	/**
+	 * Valide et enregistre un nouveau user
+	 */
 	@PostMapping("/user/validate")
 	public String validate(@Valid User user, BindingResult result, Model model) {
 		try {
@@ -70,6 +79,9 @@ public class UserController {
 		}
 	}
 
+	/**
+	 * Affiche le formulaire de mise à jour d'un user
+	 */
 	@GetMapping("/user/update/{id}")
 	public String showUpdateForm(@PathVariable("id") Integer id, Model model) {
 		User user = userRepository.findById(id)
@@ -79,6 +91,9 @@ public class UserController {
 		return "user/update";
 	}
 
+	/**
+	 * Met à jour un user existant
+	 */
 	@PostMapping("/user/update/{id}")
 	public String updateUser(@PathVariable("id") Integer id, @Valid User user, BindingResult result, Model model) {
 		try {
@@ -115,6 +130,9 @@ public class UserController {
 		}
 	}
 
+	/**
+	 * Supprime un user par son ID
+	 */
 	@GetMapping("/user/delete/{id}")
 	public String deleteUser(@PathVariable("id") Integer id, Model model) {
 		User user = userRepository.findById(id)

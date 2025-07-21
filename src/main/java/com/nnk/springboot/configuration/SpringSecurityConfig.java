@@ -12,6 +12,9 @@ import org.springframework.security.web.SecurityFilterChain;
 
 import com.nnk.springboot.services.CustomUserDetailsService;
 
+/**
+ * Configuration de la sécurité Spring Security de l'application.
+ */
 @Configuration
 @EnableWebSecurity
 public class SpringSecurityConfig {
@@ -19,13 +22,21 @@ public class SpringSecurityConfig {
 	@Autowired
 	private CustomUserDetailsService customUserDetailsService;
 
+	/**
+	 * Déclaration du filtre de sécurité principal.
+	 * 
+	 * @param http l'objet HttpSecurity configuré par Spring
+	 * @return SecurityFilterChain le filtre configuré
+	 */
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		return http
 				.authorizeHttpRequests(auth -> auth
-						.requestMatchers("/", "/home.html", "/app/login", "/app/login?error=true", "/css/**", "/403","/app/error")
+						.requestMatchers("/", "/home.html", "/app/login", "/app/login?error=true", "/css/**", "/403",
+								"/app/error")
 						.permitAll()
-						.requestMatchers("/bidList/**", "/curvePoint/**", "/rating/**", "/ruleName/**", "/trade/**","secure/article-details")
+						.requestMatchers("/bidList/**", "/curvePoint/**", "/rating/**", "/ruleName/**", "/trade/**",
+								"secure/article-details")
 						.hasAnyRole("USER", "ADMIN").requestMatchers("/admin/**", "/user/**").hasRole("ADMIN")
 						.anyRequest().authenticated())
 				.formLogin(form -> form.loginPage("/app/login").usernameParameter("username")
@@ -34,11 +45,23 @@ public class SpringSecurityConfig {
 				.exceptionHandling(exception -> exception.accessDeniedPage("/app/error")).build();
 	}
 
+	/**
+	 * Déclare un encodeur de mots de passe basé sur BCrypt.
+	 * 
+	 * @return une instance de BCryptPasswordEncoder
+	 */
 	@Bean
 	public BCryptPasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
 
+	/**
+	 * Configuration manuelle du gestionnaire d'authentification.
+	 * 
+	 * @param http                  le contexte HttpSecurity
+	 * @param bCryptPasswordEncoder l'encodeur de mot de passe à utiliser
+	 * @return une instance d'AuthenticationManager
+	 */
 	@Bean
 	public AuthenticationManager authenticationManager(HttpSecurity http, BCryptPasswordEncoder bCryptPasswordEncoder)
 			throws Exception {

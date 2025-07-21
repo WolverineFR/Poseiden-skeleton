@@ -24,17 +24,26 @@ public class RatingController {
 	@Autowired
 	private RatingServiceImpl ratingServiceImpl;
 
+	/**
+	 * Affiche la liste des rating
+	 */
 	@RequestMapping("/rating/list")
 	public String home(Model model) {
 		model.addAttribute("ratings", ratingServiceImpl.getAllRatings());
 		return "rating/list";
 	}
 
+	/**
+	 * Affiche le formulaire d'ajout de rating
+	 */
 	@GetMapping("/rating/add")
 	public String addRatingForm(Rating rating) {
 		return "rating/add";
 	}
 
+	/**
+	 * Valide et enregistre un nouveau rating
+	 */
 	@PostMapping("/rating/validate")
 	public String validate(@Valid Rating rating, BindingResult result, Model model) {
 		try {
@@ -61,6 +70,9 @@ public class RatingController {
 		}
 	}
 
+	/**
+	 * Affiche le formulaire de mise à jour d'un rating
+	 */
 	@GetMapping("/rating/update/{id}")
 	public String showUpdateForm(@PathVariable("id") Integer id, Model model) {
 		Rating rating = ratingServiceImpl.getRatingById(id);
@@ -68,6 +80,9 @@ public class RatingController {
 		return "rating/update";
 	}
 
+	/**
+	 * Met à jour un rating existant
+	 */
 	@PostMapping("/rating/update/{id}")
 	public String updateRating(@PathVariable("id") Integer id, @Valid Rating rating, BindingResult result,
 			Model model) {
@@ -96,6 +111,9 @@ public class RatingController {
 		}
 	}
 
+	/**
+	 * Supprime un rating par son ID
+	 */
 	@GetMapping("/rating/delete/{id}")
 	public String deleteRating(@PathVariable("id") Integer id, Model model) {
 		Rating rating = ratingServiceImpl.getRatingById(id);
